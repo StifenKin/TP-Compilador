@@ -1,0 +1,101 @@
+package lyc.compiler;
+import java_cup.runtime.*;
+import java.util.*;
+import java.util.ArrayList;
+import lyc.compiler.simbolsTable.SimbolTable;
+import lyc.compiler.simbolsTable.SimbolRow;
+import lyc.compiler.simbolsTable.DataType;
+
+
+class Parser;
+action code {:
+
+ ArrayList<Integer> v_lista_exp = new ArrayList<Integer>();
+  DataType tipo;
+  public SimbolTable simbolTable = SimbolTable.getSingletonInstance();
+      public ArrayList<String> identifiersList = new ArrayList();
+
+ :};
+
+parser code{:
+    public List<SimbolRow> getListaSimbolos() {
+        return action_obj.simbolTable.getListaSimbolos();
+    }
+:}
+
+// Terminals
+terminal ASSIG;
+terminal PLUS;
+terminal SUB;
+terminal MULT;
+terminal DIV;
+terminal OPEN_BRACKET;
+terminal CLOSE_BRACKET;
+terminal INTEGER_CONSTANT;
+terminal REAL_CONSTANT;
+terminal STRING_CONSTANT;
+terminal IDENTIFIER;
+terminal COMA;
+terminal PUNTO_COMA;
+terminal DOS_PUNTOS;
+terminal CORCH_ABRE;
+terminal CORCH_CIERRA;
+terminal LLAVE_ABRE;
+terminal LLAVE_CIERRA;
+terminal MENOR_IGUAL;
+terminal MENOR;
+terminal MAYOR;
+terminal MAYOR_IGUAL;
+terminal IGUAL;
+terminal AND;
+terminal OR;
+terminal NOT;
+terminal DISTINTO;
+terminal SI;
+terminal MIENTRAS;
+terminal SINO;
+terminal LEER;
+terminal ESCRIBIR;
+terminal INT;
+terminal FLOAT;
+terminal STRING;
+terminal INIT;
+
+
+// Non Terminals
+non terminal program;
+non terminal dec;
+non terminal sentence;
+non terminal assignment;
+non terminal expression;
+non terminal term;
+non terminal factor;
+non terminal sentencias_init;
+non terminal sentencias_init2;
+non terminal tipo_variable;
+// Start Symbol Definition
+start with sentence;
+
+program ::= INIT LLAVE_ABRE dec LLAVE_CIERRA sentence  {: System.out.println("End"); :};
+program ::= sentence  {: System.out.println("End"); :};
+dec ::= sentencias_init {: System.out.println("INIT LLAVE_ABRE sentencias_init LLAVE_CIERRA"); :};
+sentencias_init ::= sentencias_init sentencias_init2 DOS_PUNTOS tipo_variable {: System.out.println("sentencias_init sentencias_init2 DOS_PUNTOS tipo_variable"); :};
+sentencias_init ::= sentencias_init2 DOS_PUNTOS tipo_variable {: System.out.println("sentencias_init2 DOS_PUNTOS tipo_variable"); :};
+sentencias_init2 ::= sentencias_init2 COMA IDENTIFIER:id {: simbolTable.add("_"+id, DataType.INT, id.toString(), id.toString().length()); System.out.println("sentencias_init2 COMA factor"); :};
+sentencias_init2 ::= IDENTIFIER:id  {: simbolTable.add("_"+id, DataType.INT, id.toString(), id.toString().length()); System.out.println("ID"); :};
+tipo_variable ::= FLOAT {: System.out.println("Variable float"); :};
+tipo_variable ::= INT {: System.out.println("Variable int"); :};
+tipo_variable ::= STRING {: System.out.println("Variable string"); :};
+sentence ::= assignment {: System.out.println("sentence"); :};
+assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
+expression ::= expression PLUS term {: System.out.println("+"); :};
+expression ::= expression SUB term {: System.out.println("-"); :};
+expression ::= term {: System.out.println("Expression = Term"); :};
+term ::= term MULT factor {: System.out.println("*"); :};
+term ::= term DIV factor {: System.out.println("/"); :};
+term ::= factor {: System.out.println("Term = factor"); :};
+factor ::= IDENTIFIER:id  {: simbolTable.add("_"+id, DataType.INT, id.toString(), id.toString().length());System.out.println("Id: " + id); :};
+factor ::= INTEGER_CONSTANT:constant {:  simbolTable.add("_"+constant, DataType.INT, constant.toString(), constant.toString().length()); System.out.println("Constant: " + constant ); :};
+factor ::= REAL_CONSTANT:constant {: simbolTable.add("_"+constant, DataType.FLOAT, constant.toString(), constant.toString().length()); System.out.println("Constant REAL: " + constant ); :};
+factor ::= STRING_CONSTANT:constant {:  simbolTable.add("_"+constant, DataType.STRING, constant.toString(), constant.toString().length()); System.out.println("Constant STRING: " + constant ); :};
+factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
