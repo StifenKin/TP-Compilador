@@ -86,6 +86,7 @@ Int = "Int"
 Float = "Float"
 String = "String"
 init = "init"
+busco_y_reemplazo = "busco_y_reemplazo"
 
 WhiteSpace = {LineTerminator} | {Identation}
 Identifier = {Letter} ({Letter}|{Digit})*
@@ -108,7 +109,8 @@ Comment = "*-"({Letter}|{Digit}|{Space}|{AllowedSymbols})* "-*"
   {Mientras}                                { return symbol(ParserSym.MIENTRAS); }
   {Sino}                                    { return symbol(ParserSym.SINO); }
   {leer}                                    { return symbol(ParserSym.LEER); }
-  {escribir}                                   { return symbol(ParserSym.ESCRIBIR); }
+  {escribir}                                { return symbol(ParserSym.ESCRIBIR); }
+  {busco_y_reemplazo}                       { return symbol(ParserSym.BUSCO_Y_REEMPLAZO); }
   {Int}                                     { return symbol(ParserSym.INT); }
   {Float}                                   { return symbol(ParserSym.FLOAT); }
   {String}                                  { return symbol(ParserSym.STRING); }

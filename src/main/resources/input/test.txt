@@ -1,6 +1,8 @@
-init {
-    a1, b1 : Float
+init { a1, b1 : Float
     variable1 : Int
-    p1, p2, p3 : String 
-}
+    p1, p2, p3, buscar, en, reempla : String }
 c := d * ( e - 21 ) / 4
+v1:= busco_y_reemplazo ("buscar", "Hola quiero buscar una palabra" , "reemplazar")
+buscar := "buscar"
+en := "Hola quiero buscar una palabra" 
+reempla := "reemplazar"
