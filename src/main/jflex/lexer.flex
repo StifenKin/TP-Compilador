@@ -73,9 +73,9 @@ Menor = "<"
 Mayor_Ig = ">="
 Mayor = ">"
 Igual = "=="
-And = "and"
-Or = "or"
-Not = "not"
+and = "and"
+or = "or"
+not = "not"
 Distinto = "!="
 Si = "Si"
 Mientras = "Mientras"
@@ -87,6 +87,7 @@ Float = "Float"
 String = "String"
 init = "init"
 busco_y_reemplazo = "busco_y_reemplazo"
+aplicar_descuento = "aplicar_descuento"
 
 WhiteSpace = {LineTerminator} | {Identation}
 Identifier = {Letter} ({Letter}|{Digit})*
@@ -111,10 +112,14 @@ Comment = "*-"({Letter}|{Digit}|{Space}|{AllowedSymbols})* "-*"
   {leer}                                    { return symbol(ParserSym.LEER); }
   {escribir}                                { return symbol(ParserSym.ESCRIBIR); }
   {busco_y_reemplazo}                       { return symbol(ParserSym.BUSCO_Y_REEMPLAZO); }
+  {aplicar_descuento}                       { return symbol(ParserSym.APLICAR_DESCUENTO); }
   {Int}                                     { return symbol(ParserSym.INT); }
   {Float}                                   { return symbol(ParserSym.FLOAT); }
   {String}                                  { return symbol(ParserSym.STRING); }
   {init}                                    { return symbol(ParserSym.INIT); }
+  {and}                                     { return symbol(ParserSym.AND); }
+  {or}                                      { return symbol(ParserSym.OR); }
+  {not}                                     { return symbol(ParserSym.NOT); }
   /* identifiers */
    {Identifier}                             {
                                                String id = new String(yytext());
@@ -167,9 +172,6 @@ Comment = "*-"({Letter}|{Digit}|{Space}|{AllowedSymbols})* "-*"
      {Mayor_Ig}                                { return symbol(ParserSym.MAYOR_IGUAL); }
       {Mayor}                                   { return symbol(ParserSym.MAYOR); }
       {Igual}                                   { return symbol(ParserSym.IGUAL); }
-      {And}                                     { return symbol(ParserSym.AND); }
-      {Or}                                      { return symbol(ParserSym.OR); }
-      {Not}                                     { return symbol(ParserSym.NOT); }
       {Distinto}                                { return symbol(ParserSym.DISTINTO); }
 
   /* whitespace */

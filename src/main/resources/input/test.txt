@@ -1,8 +1,46 @@
 init { a1, b1 : Float
-    variable1 : Int
+    variable1,c,a, b : Int
     p1, p2, p3, buscar, en, reempla : String }
-c := d * ( e - 21 ) / 4
-v1:= busco_y_reemplazo ("buscar", "Hola quiero buscar una palabra" , "reemplazar")
-buscar := "buscar"
-en := "Hola quiero buscar una palabra" 
-reempla := "reemplazar"
+b1 := 18.5
+a := 1
+b := 1
+c := 2
+
+leer(p1)
+escribir(p3)
+
+Si (a > b)
+{
+    escribir("a es mas grande que b")
+}
+Sino
+{
+    escribir("a es mas chico o igual a b")
+}
+
+Si (a > b and c > b)
+{
+    escribir("a es mas grande que b")
+}
+
+Si (a > b or c > b)
+{
+    escribir("a es mas grande que b")
+}
+
+Si (not a > b)
+{
+    escribir("a no es mas grande que b")
+}
+
+Mientras (a > b)
+{
+    escribir("a es mas grande que b")
+    a := a +1
+}
+
+p3 := busco_y_reemplazo ("buscar", "Hola quiero buscar una palabra" , "reemplazar")
+
+a := aplicar_descuento(27.5, [500.0, 305.0, 79.4, 10.0], 3)
+
+a := aplicar_descuento(27.5, [ ], 3)

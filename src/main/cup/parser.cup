@@ -12,6 +12,9 @@ action code {:
 
  ArrayList<Integer> v_lista_exp = new ArrayList<Integer>();
   ArrayList<Object> cadena2 = new ArrayList<Object>();
+  ArrayList<Object> precios = new ArrayList<Object>();
+  ArrayList<Double> salida_precios = new ArrayList<Double>();
+  int des;
   DataType tipo;
   public SimbolTable simbolTable = SimbolTable.getSingletonInstance();
       public ArrayList<String> identifiersList = new ArrayList();
@@ -20,13 +23,9 @@ action code {:
       String cad1 = cadena2.get(0).toString();
       String cad2 = cadena2.get(1).toString();
       String cad3 = cadena2.get(2).toString();
-       System.out.println("cadena recibida en funcion buscar y reemplazar: " + cad1);
-       System.out.println("cadena recibida en funcion buscar y reemplazar: " + cad2);
-       System.out.println("cadena recibida en funcion buscar y reemplazar: " + cad3);
        String c1 =cad1.substring(1,cad1.length()-1);
        String c3 =cad3.substring(1,cad3.length()-1);
-       System.out.println("c1 contiene : " + c1);
-       System.out.println("c3 contiene : " + c3);
+
        if(cad2.contains(c1))
        {
          System.out.println("coincidencia");
@@ -39,7 +38,59 @@ action code {:
        }
    }
 
- :}
+    public int Aplicar_descuento(Object desc,Object indice) {
+     int ind;
+     int pos = precios.size();
+     String str = desc.toString();
+     double d = Double.valueOf(str).doubleValue();
+     String str2 = indice.toString();
+     int indi = Integer.parseInt(str2);
+     double desc_porc;
+
+     if(precios.isEmpty())
+     {
+        System.out.println("Error. La lista esta vacia");
+        return 1;
+     }
+
+     if(indi < pos)
+     {
+       for(int i=1;i<=pos;i++)
+       {
+            if(indi == i)
+           {
+               String s = precios.get(i-1).toString();
+               double val = Double.valueOf(s).doubleValue();
+               desc_porc = (val * d)/100;
+               salida_precios.add(desc_porc);
+           }
+            else
+           {
+              String s = precios.get(i-1).toString();
+              double val = Double.valueOf(s).doubleValue();
+              desc_porc = val - d;
+              salida_precios.add(desc_porc);
+           }
+       }
+             System.out.println("resultado Funcion Aplicar_Descuento:");
+             for(int i=0;i<salida_precios.size();i++)
+            {
+               System.out.println("elemento de la lista n° "+ i + " :"+salida_precios.get(i));
+            }
+
+
+
+       return 0;
+     }
+     else
+     {
+       System.out.println("Error. el indice es mayor o igual a la longitud de la lista ");
+       return 1;
+     }
+
+ }
+
+:}
 
 parser code{:
     public List<SimbolRow> getListaSimbolos() {
@@ -85,6 +136,7 @@ terminal FLOAT;
 terminal STRING;
 terminal INIT;
 terminal BUSCO_Y_REEMPLAZO;
+terminal APLICAR_DESCUENTO;
 
 
 // Non Terminals
@@ -103,9 +155,12 @@ non terminal seleccion;
 non terminal ciclo;
 non terminal condicion;
 non terminal comparacion;
+non terminal comparador;
 non terminal entrada;
 non terminal salida;
 non terminal params;
+non terminal parametros;
+non terminal lista;
 
 // Start Symbol Definition
 start with program;
@@ -122,16 +177,15 @@ sentence ::= salida {: System.out.println("sentence"); :};
 seleccion ::= SI OPEN_BRACKET condicion CLOSE_BRACKET LLAVE_ABRE bloque LLAVE_CIERRA {: System.out.println("SI"); :};
 seleccion ::= SI OPEN_BRACKET condicion CLOSE_BRACKET LLAVE_ABRE bloque LLAVE_CIERRA SINO LLAVE_ABRE bloque LLAVE_CIERRA {: System.out.println("SINO"); :};
 ciclo ::= MIENTRAS OPEN_BRACKET condicion CLOSE_BRACKET LLAVE_ABRE bloque LLAVE_CIERRA {: System.out.println("MIENTRAS"); :};
-condicion ::= comparacion {: System.out.println("Comparacion"); :};
 condicion ::= comparacion AND comparacion {: System.out.println("Oerador logico AND"); :};
 condicion ::= comparacion OR comparacion {: System.out.println("Oerador logico OR"); :};
 condicion ::= NOT comparacion {: System.out.println("Oerador logico NOT"); :};
-comparacion ::= expression IGUAL expression {: System.out.println("Comparador igual (=)"); :};
-comparacion ::= expression MAYOR expression {: System.out.println("Comparador mayor (>)"); :};
-comparacion ::= expression MAYOR_IGUAL expression {: System.out.println("Comparador mayor_igual (>=)"); :};
-comparacion ::= expression MENOR expression {: System.out.println("Comparador menor (<)"); :};
-comparacion ::= expression MENOR_IGUAL expression {: System.out.println("Comparador menor_igual (<=)"); :};
-comparacion ::= OPEN_BRACKET comparacion CLOSE_BRACKET {: System.out.println("comparacion con parentesis"); :};
+condicion ::= comparacion {: System.out.println("Comparacion"); :};
+comparacion ::= expression MAYOR expression {: System.out.println("Comparador"); :};
+comparacion ::= expression MENOR expression {: System.out.println("Comparador"); :};
+comparacion ::= expression MAYOR_IGUAL expression {: System.out.println("Comparador"); :};
+comparacion ::= expression MENOR_IGUAL expression {: System.out.println("Comparador"); :};
+comparacion ::= expression IGUAL expression {: System.out.println("Comparador"); :};
 assignment ::= IDENTIFIER:id ASSIG BUSCO_Y_REEMPLAZO OPEN_BRACKET params CLOSE_BRACKET {: busco_y_reemplazo(); System.out.println("Busco y reemplazo"); :};
 params ::= STRING_CONSTANT:const1 COMA STRING_CONSTANT:const2 COMA STRING_CONSTANT:const3
 {: cadena2.add(const1);
@@ -140,6 +194,11 @@ params ::= STRING_CONSTANT:const1 COMA STRING_CONSTANT:const2 COMA STRING_CONSTA
    System.out.println("params");
 :};
 assignment ::= IDENTIFIER:id ASSIG expression {: System.out.println("Assignment"); :};
+assignment ::= IDENTIFIER:id ASSIG APLICAR_DESCUENTO OPEN_BRACKET parametros CLOSE_BRACKET {: precios.clear(); salida_precios.clear();System.out.println("Assignment"); :};
+parametros ::= REAL_CONSTANT:const_real COMA CORCH_ABRE lista CORCH_CIERRA COMA INTEGER_CONSTANT:const_entera {: des =Aplicar_descuento(const_real,const_entera); System.out.println("Parametros"); :};
+parametros ::= REAL_CONSTANT:const_real COMA CORCH_ABRE CORCH_CIERRA COMA INTEGER_CONSTANT:const_entera {: des =Aplicar_descuento(const_real,const_entera); System.out.println("Parametros"); :};
+lista ::= lista COMA REAL_CONSTANT:constant {: precios.add(constant); System.out.println("Lista"); :};
+lista ::= REAL_CONSTANT:constant {: precios.add(constant); System.out.println("Lista"); :};
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
 expression ::= term {: System.out.println("Expression = Term"); :};
@@ -160,9 +219,9 @@ variable ::= IDENTIFIER:id COMA variable
     System.out.println("variable");
 
 :};
+salida ::= ESCRIBIR OPEN_BRACKET IDENTIFIER:id CLOSE_BRACKET {: System.out.println("Escribir"); :};
+salida ::= ESCRIBIR OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("Escribir"); :};
+entrada ::= LEER OPEN_BRACKET IDENTIFIER:id CLOSE_BRACKET {: System.out.println("Leer"); :};
 tipo_variable ::= FLOAT {: System.out.println("Variable float"); :};
 tipo_variable ::= INT {: System.out.println("Variable int"); :};
 tipo_variable ::= STRING {: System.out.println("Variable string"); :};
-entrada ::= LEER OPEN_BRACKET IDENTIFIER:id CLOSE_BRACKET {: System.out.println("Leer"); :};
-salida ::= ESCRIBIR OPEN_BRACKET IDENTIFIER:id CLOSE_BRACKET {: System.out.println("Escribir"); :};
-salida ::= ESCRIBIR OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("Escribir"); :};
