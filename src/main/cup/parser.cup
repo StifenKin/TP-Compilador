@@ -1,9 +1,102 @@
 package lyc.compiler;
-
 import java_cup.runtime.*;
+import java.util.*;
+import java.util.ArrayList;
+import lyc.compiler.simbolsTable.SimbolTable;
+import lyc.compiler.simbolsTable.SimbolRow;
+import lyc.compiler.simbolsTable.DataType;
+
 
 class Parser;
+action code {:
 
+ ArrayList<Integer> v_lista_exp = new ArrayList<Integer>();
+  ArrayList<Object> cadena2 = new ArrayList<Object>();
+  ArrayList<Object> precios = new ArrayList<Object>();
+  ArrayList<Double> salida_precios = new ArrayList<Double>();
+  int des;
+  DataType tipo;
+  public SimbolTable simbolTable = SimbolTable.getSingletonInstance();
+      public ArrayList<String> identifiersList = new ArrayList();
+
+   public void busco_y_reemplazo() {
+      String cad1 = cadena2.get(0).toString();
+      String cad2 = cadena2.get(1).toString();
+      String cad3 = cadena2.get(2).toString();
+       String c1 =cad1.substring(1,cad1.length()-1);
+       String c3 =cad3.substring(1,cad3.length()-1);
+
+       if(cad2.contains(c1))
+       {
+         System.out.println("coincidencia");
+         String cadena_reemplazada = cad2.replace(c1,c3);
+         System.out.println("cadena_reemplazada contiene : " + cadena_reemplazada);
+       }
+       else
+       {
+         System.out.println("no hay ccoincidencia");
+       }
+   }
+
+    public int Aplicar_descuento(Object desc,Object indice) {
+     int ind;
+     int pos = precios.size();
+     String str = desc.toString();
+     double d = Double.valueOf(str).doubleValue();
+     String str2 = indice.toString();
+     int indi = Integer.parseInt(str2);
+     double desc_porc;
+
+     if(precios.isEmpty())
+     {
+        System.out.println("Error. La lista esta vacia");
+        return 1;
+     }
+
+     if(indi < pos)
+     {
+       for(int i=1;i<=pos;i++)
+       {
+            if(indi == i)
+           {
+               String s = precios.get(i-1).toString();
+               double val = Double.valueOf(s).doubleValue();
+               desc_porc = (val * d)/100;
+               salida_precios.add(desc_porc);
+           }
+            else
+           {
+              String s = precios.get(i-1).toString();
+              double val = Double.valueOf(s).doubleValue();
+              desc_porc = val - d;
+              salida_precios.add(desc_porc);
+           }
+       }
+             System.out.println("resultado Funcion Aplicar_Descuento:");
+             for(int i=0;i<salida_precios.size();i++)
+            {
+               System.out.println("elemento de la lista n° "+ i + " :"+salida_precios.get(i));
+            }
+
+
+
+       return 0;
+     }
+     else
+     {
+       System.out.println("Error. el indice es mayor o igual a la longitud de la lista ");
+       return 1;
+     }
+
+ }
+
+:}
+
+parser code{:
+    public List<SimbolRow> getListaSimbolos() {
+        return action_obj.simbolTable.getListaSimbolos();
+   }
+:}
 
 // Terminals
 terminal ASSIG;
@@ -14,26 +107,121 @@ terminal DIV;
 terminal OPEN_BRACKET;
 terminal CLOSE_BRACKET;
 terminal INTEGER_CONSTANT;
+terminal REAL_CONSTANT;
+terminal STRING_CONSTANT;
 terminal IDENTIFIER;
+terminal COMA;
+terminal PUNTO_COMA;
+terminal DOS_PUNTOS;
+terminal CORCH_ABRE;
+terminal CORCH_CIERRA;
+terminal LLAVE_ABRE;
+terminal LLAVE_CIERRA;
+terminal MENOR_IGUAL;
+terminal MENOR;
+terminal MAYOR;
+terminal MAYOR_IGUAL;
+terminal IGUAL;
+terminal AND;
+terminal OR;
+terminal NOT;
+terminal DISTINTO;
+terminal SI;
+terminal MIENTRAS;
+terminal SINO;
+terminal LEER;
+terminal ESCRIBIR;
+terminal INT;
+terminal FLOAT;
+terminal STRING;
+terminal INIT;
+terminal BUSCO_Y_REEMPLAZO;
+terminal APLICAR_DESCUENTO;
+
 
 // Non Terminals
+non terminal program;
+non terminal initiation;
+non terminal bloque;
+non terminal dec;
+non terminal variable;
 non terminal sentence;
 non terminal assignment;
 non terminal expression;
 non terminal term;
 non terminal factor;
+non terminal tipo_variable;
+non terminal seleccion;
+non terminal ciclo;
+non terminal condicion;
+non terminal comparacion;
+non terminal comparador;
+non terminal entrada;
+non terminal salida;
+non terminal params;
+non terminal parametros;
+non terminal lista;
 
 // Start Symbol Definition
-start with sentence;
+start with program;
 
-sentence ::= assignment {: System.out.println("End"); :};
-assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
+program ::= initiation bloque  {: System.out.println("End"); :};
+program ::= bloque  {: System.out.println("End"); :};
+bloque ::= sentence {: System.out.println("bloque"); :};
+bloque ::= bloque sentence {: System.out.println("bloque"); :};
+sentence ::= assignment {: System.out.println("sentence"); :};
+sentence ::= seleccion {: System.out.println("sentence"); :};
+sentence ::= ciclo {: System.out.println("sentence"); :};
+sentence ::= entrada {: System.out.println("sentence"); :};
+sentence ::= salida {: System.out.println("sentence"); :};
+seleccion ::= SI OPEN_BRACKET condicion CLOSE_BRACKET LLAVE_ABRE bloque LLAVE_CIERRA {: System.out.println("SI"); :};
+seleccion ::= SI OPEN_BRACKET condicion CLOSE_BRACKET LLAVE_ABRE bloque LLAVE_CIERRA SINO LLAVE_ABRE bloque LLAVE_CIERRA {: System.out.println("SINO"); :};
+ciclo ::= MIENTRAS OPEN_BRACKET condicion CLOSE_BRACKET LLAVE_ABRE bloque LLAVE_CIERRA {: System.out.println("MIENTRAS"); :};
+condicion ::= comparacion AND comparacion {: System.out.println("Oerador logico AND"); :};
+condicion ::= comparacion OR comparacion {: System.out.println("Oerador logico OR"); :};
+condicion ::= NOT comparacion {: System.out.println("Oerador logico NOT"); :};
+condicion ::= comparacion {: System.out.println("Comparacion"); :};
+comparacion ::= expression MAYOR expression {: System.out.println("Comparador"); :};
+comparacion ::= expression MENOR expression {: System.out.println("Comparador"); :};
+comparacion ::= expression MAYOR_IGUAL expression {: System.out.println("Comparador"); :};
+comparacion ::= expression MENOR_IGUAL expression {: System.out.println("Comparador"); :};
+comparacion ::= expression IGUAL expression {: System.out.println("Comparador"); :};
+assignment ::= IDENTIFIER:id ASSIG BUSCO_Y_REEMPLAZO OPEN_BRACKET params CLOSE_BRACKET {: busco_y_reemplazo(); System.out.println("Busco y reemplazo"); :};
+params ::= STRING_CONSTANT:const1 COMA STRING_CONSTANT:const2 COMA STRING_CONSTANT:const3
+{: cadena2.add(const1);
+   cadena2.add(const2);
+   cadena2.add(const3);
+   System.out.println("params");
+:};
+assignment ::= IDENTIFIER:id ASSIG expression {: System.out.println("Assignment"); :};
+assignment ::= IDENTIFIER:id ASSIG APLICAR_DESCUENTO OPEN_BRACKET parametros CLOSE_BRACKET {: precios.clear(); salida_precios.clear();System.out.println("Assignment"); :};
+parametros ::= REAL_CONSTANT:const_real COMA CORCH_ABRE lista CORCH_CIERRA COMA INTEGER_CONSTANT:const_entera {: des =Aplicar_descuento(const_real,const_entera); System.out.println("Parametros"); :};
+parametros ::= REAL_CONSTANT:const_real COMA CORCH_ABRE CORCH_CIERRA COMA INTEGER_CONSTANT:const_entera {: des =Aplicar_descuento(const_real,const_entera); System.out.println("Parametros"); :};
+lista ::= lista COMA REAL_CONSTANT:constant {: precios.add(constant); System.out.println("Lista"); :};
+lista ::= REAL_CONSTANT:constant {: precios.add(constant); System.out.println("Lista"); :};
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
 expression ::= term {: System.out.println("Expression = Term"); :};
 term ::= term MULT factor {: System.out.println("*"); :};
 term ::= term DIV factor {: System.out.println("/"); :};
 term ::= factor {: System.out.println("Term = factor"); :};
-factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
-factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
+factor ::= IDENTIFIER:id  {: simbolTable.add("_"+id, DataType.SIN_DATO, "SIN_VALOR", id.toString().length());System.out.println("Id: " + id); :};
+factor ::= INTEGER_CONSTANT:constant {: simbolTable.add("_"+constant, DataType.SIN_DATO, constant.toString(), constant.toString().length()); System.out.println("Constant: " + constant ); :};
+factor ::= REAL_CONSTANT:constant {: simbolTable.add("_"+constant, DataType.SIN_DATO, constant.toString(), constant.toString().length()); System.out.println("Constant REAL: " + constant ); :};
+factor ::= STRING_CONSTANT:constant {: simbolTable.add("_"+constant, DataType.SIN_DATO, constant.toString(), constant.toString().length()); System.out.println("Constant STRING: " + constant ); :};
 factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
+initiation ::= INIT LLAVE_ABRE dec LLAVE_CIERRA  {: System.out.println("Declaracion de variables"); :};
+dec ::= variable {: System.out.println("dec de variables"); :};
+dec ::= dec variable {: System.out.println("dec de variables"); :};
+variable ::= IDENTIFIER:id DOS_PUNTOS tipo_variable {: simbolTable.add("_"+id, DataType.SIN_DATO, "SIN_VALOR", id.toString().length());System.out.println("variable"); :};
+variable ::= IDENTIFIER:id COMA variable
+{:  simbolTable.add("_"+id, DataType.SIN_DATO, "SIN_VALOR", id.toString().length());
+    System.out.println("variable");
+
+:};
+salida ::= ESCRIBIR OPEN_BRACKET IDENTIFIER:id CLOSE_BRACKET {: System.out.println("Escribir"); :};
+salida ::= ESCRIBIR OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("Escribir"); :};
+entrada ::= LEER OPEN_BRACKET IDENTIFIER:id CLOSE_BRACKET {: System.out.println("Leer"); :};
+tipo_variable ::= FLOAT {: System.out.println("Variable float"); :};
+tipo_variable ::= INT {: System.out.println("Variable int"); :};
+tipo_variable ::= STRING {: System.out.println("Variable string"); :};
