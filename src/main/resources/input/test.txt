@@ -1,1 +1,14 @@
-c=d*(e-21)/4
+#+ Declaracion de variables +#
+init {
+    nota1, nota2, id : Int
+    prom,numero1,numero2 : Float
+    nombre, pedro: String
+}
+
+
+#+ Comentario tipo 1 +#
+
+#+ CO #+ MEN +# TARIO +#
+
+#+ Asignaciones +#
+nota1 := 7

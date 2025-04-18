@@ -47,9 +47,14 @@ Else = "else"
 Write = "write"
 Read = "read"
 
+/* Funciones especiales */
+
+Reorder = "reorder"
+SliceAndConcat = "sliceAndConcat"
+
 FloatConstant = -?[0-9]+(\.[0-9]+)?
 
-/* Special Functions */
+
 
 Plus = "+"
 Mult = "*"
@@ -83,6 +88,7 @@ DoubleDot = ":"
 Letter = [a-zA-Z]
 Digit = [0-9]
 Digit19 = [1-9]
+Digit01 = [0-1]
 InvalidCharacter = [^a-zA-z0-9<>:,@/\%\+\*\-\.\[\];\(\)=?!]
 
 TraditionalComment = "#+" [^#]* "+#"
@@ -91,6 +97,7 @@ Comment = {TraditionalComment} | {NestedComment}
 
 WhiteSpace = {LineTerminator} | {Identation}
 Identifier = {Letter} ({Letter}|{Digit})*
+BooleanConstant = {Digit01}
 IntegerConstant = {Digit}+
 InvalidIntegerConstant = 0+{Digit19}+
 
@@ -125,6 +132,11 @@ StringConstant = \"(([^\"\n]*)\")
   {Else}                                   { return symbol(ParserSym.ELSE); }
   {While}                                  { return symbol(ParserSym.WHILE); }
 
+  /*Funciones especiales*/
+  {Reorder}                              { return symbol(ParserSym.REORDER); }
+  {SliceAndConcat}                          { return symbol(ParserSym.SLICE_AND_CONCAT); }
+
+
 /* Data types */
 {Int}                                     { return symbol(ParserSym.INT); }
 {Float}                                   { return symbol(ParserSym.FLOAT); }
@@ -147,6 +159,9 @@ StringConstant = \"(([^\"\n]*)\")
                                               return symbol(ParserSym.IDENTIFIER, yytext());
                                           }
   /* Constants */
+
+  {BooleanConstant}                         { return symbol(ParserSym.BOOLEAN_CONSTANT); }
+
   {IntegerConstant}                        {
                                                 if(yytext().length() > 5 || Integer.valueOf(yytext()) > 65535) {
                                                     throw new InvalidIntegerException("Integer out of range: " + yytext());
