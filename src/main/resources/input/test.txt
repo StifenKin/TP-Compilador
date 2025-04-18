@@ -11,4 +11,55 @@ init {
 #+ CO #+ MEN +# TARIO +#
 
 #+ Asignaciones +#
-nota1 := 7
+nombre := "Armando Esteban Quito"
+id := 3
+pedro := "nombre"
+numero1 := 2.4
+numero2 := .42
+
+nota1 := 8
+nota2 := 4
+
+
+write("Estado del alumno: ")
+write(nombre)
+
+
+
+#+ Decisiones +#
+if (nota1 >= 7 AND nota2 >= 7) {
+    write("Promocionado!")
+} else {
+    if((nota1 < 7 AND nota2 >= 7) OR (nota1 >= 7 AND nota2 < 7)){
+        write("Aprobado!")
+    } else{
+        write("Recursado :(")
+    }
+}
+
+#+ Condicion not +#
+if(NOT(a < b))
+{
+    write("A es mayor")
+}
+
+#+ Iteracion +#
+while (a > b)
+{
+    write("A mayor que b")
+    if(a > b) {
+        write("A mayor")
+    } else {
+        if (b > a)
+        {
+            write("B mayor")
+        } else {
+        while (b > c )
+        {
+            write("B mayor")
+        }
+        }
+    }
+}
+
+reorder([x+3, 1+1, 9-x],1,2)

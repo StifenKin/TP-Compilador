@@ -60,7 +60,7 @@ Plus = "+"
 Mult = "*"
 Sub = "-"
 Div = "/"
-Assig = "="
+Assig = ":="
 
 Mayor = ">"
 Lower = "<"
@@ -100,7 +100,7 @@ Identifier = {Letter} ({Letter}|{Digit})*
 BooleanConstant = {Digit01}
 IntegerConstant = {Digit}+
 InvalidIntegerConstant = 0+{Digit19}+
-
+FloatConstant = (({Digit}|{Digit19}{Digit}+)?\.{Digit}+)
 StringConstant = \"(([^\"\n]*)\")
 
 %%
@@ -174,6 +174,41 @@ StringConstant = \"(([^\"\n]*)\")
 
                                                 return symbol(ParserSym.INTEGER_CONSTANT, yytext());
                                             }
+
+{FloatConstant}                          {
+                                                String[] num = yytext().split("\\.");
+                                                String exp = num[0];
+                                                String mantissa = num[1];
+
+                                                 System.out.println("Token FLOAT encontrado: " + yytext());
+
+                                                if(exp.length() > 0)
+                                                    {
+                                                       if(exp.length() > 3 || Integer.parseInt(exp) > 256 )
+                                                           throw new InvalidFloatException("Exponent out of range: " + yytext());
+                                                    }
+
+                                                if(mantissa.length() > 0) {
+                                                  if(mantissa.length() > 8 || Integer.parseInt(mantissa) > 16777216)
+                                                      throw new InvalidFloatException("Mantissa out of range: " + yytext());
+                                                }
+
+                                                if(!SymbolTableManager.existsInTable(yytext())){
+                                                    String val = yytext();
+                                                    if(yytext().startsWith("."))
+                                                          val = "0" + yytext();
+                                                      SymbolEntry entry = new SymbolEntry("_"+val, DataType.FLOAT_CONS, val);
+                                                      SymbolTableManager.insertInTable(entry);
+                                                }
+
+                                                if(mantissa.length() > 0) {
+                                                  if(mantissa.length() > 8 || Integer.parseInt(mantissa) > 16777216)
+                                                      throw new InvalidFloatException("Mantissa out of range");
+                                                }
+                                                return symbol(ParserSym.FLOAT_CONSTANT, yytext());
+                                            }
+
+
 
   {StringConstant}                         {
                                                 sb = new StringBuffer(yytext());
