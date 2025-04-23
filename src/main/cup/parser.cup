@@ -229,8 +229,8 @@ factor ::= OPEN_BRACKET expression:e CLOSE_BRACKET {:
 reorder ::= REORDER OPEN_BRACKET OPEN_SQUARE_BRACKET c_list CLOSE_SQUARE_BRACKET COMMA BOOLEAN_CONSTANT COMMA INTEGER_CONSTANT CLOSE_BRACKET {:System.out.println("REORDER function");:};
 c_list ::= c_list COMMA list ;
 c_list ::= list ;
-list ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
-list ::= INTEGER_CONSTANT:constant {: System.out.println("Integer constant: " + constant ); :};
+list ::= expression:e  {: System.out.println("Expresion: " + e); :};
+//list ::= INTEGER_CONSTANT:constant {: System.out.println("Integer constant: " + constant ); :};
 
 //y = sliceAndConcat(3, 6, "amarillo", "verde", 0)
 slice_and_concat ::= IDENTIFIER ASSIG SLICE_AND_CONCAT OPEN_BRACKET INTEGER_CONSTANT COMMA INTEGER_CONSTANT COMMA STRING_CONSTANT COMMA STRING_CONSTANT COMMA BOOLEAN_CONSTANT CLOSE_BRACKET {:System.out.println("SLICE AND CONCAT function");:};

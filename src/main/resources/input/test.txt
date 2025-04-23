@@ -61,5 +61,5 @@ while (a > b)
         }
     }
 }
-
-reorder([x+3, 1+1, 9-x],1,2)
+y := sliceAndConcat(3, 6, "amarillo", "verde", 0)
+reorder([x+3, 2+2, 9-x],1,2)
