@@ -178,37 +178,30 @@ StringConstant = \"(([^\"\n]*)\")
                                                 return symbol(ParserSym.INTEGER_CONSTANT, yytext());
                                             }
 
-{FloatConstant}                          {
-                                                String[] num = yytext().split("\\.");
-                                                String exp = num[0];
-                                                String mantissa = num[1];
+  {FloatConstant}                           {
+                                                String text = yytext();
 
-                                                 System.out.println("Token FLOAT encontrado: " + yytext());
+                                                System.out.println("Token FLOAT encontrado: " + text);
 
-                                                if(exp.length() > 0)
-                                                    {
-                                                       if(exp.length() > 3 || Integer.parseInt(exp) > 256 )
-                                                           throw new InvalidFloatException("Exponent out of range: " + yytext());
-                                                    }
+                                                String[] num = text.split("\\.");
 
-                                                if(mantissa.length() > 0) {
-                                                  if(mantissa.length() > 8 || Integer.parseInt(mantissa) > 16777216)
-                                                      throw new InvalidFloatException("Mantissa out of range: " + yytext());
-                                                }
+                                                String exp = num[0].isEmpty() ? "0" : num[0];
+                                                String mantissa = num.length > 1 ? num[1] : "0";
 
-                                                if(!SymbolTableManager.existsInTable(yytext())){
-                                                    String val = yytext();
-                                                    if(yytext().startsWith("."))
-                                                          val = "0" + yytext();
-                                                      SymbolEntry entry = new SymbolEntry("_"+val, DataType.FLOAT_CONS, val);
-                                                      SymbolTableManager.insertInTable(entry);
-                                                }
+                                            if (exp.length() > 3 || Integer.parseInt(exp) > 256) {
+                                                throw new InvalidFloatException("Exponent out of range: " + text);
+                                            }
 
-                                                if(mantissa.length() > 0) {
-                                                  if(mantissa.length() > 8 || Integer.parseInt(mantissa) > 16777216)
-                                                      throw new InvalidFloatException("Mantissa out of range");
-                                                }
-                                                return symbol(ParserSym.FLOAT_CONSTANT, yytext());
+                                            if (mantissa.length() > 8 || Integer.parseInt(mantissa) > 16777216) {
+                                                throw new InvalidFloatException("Mantissa out of range: " + text);
+                                            }
+
+                                            if (!SymbolTableManager.existsInTable(text)) {
+                                                SymbolEntry entry = new SymbolEntry("_" + text, DataType.FLOAT_CONS, text);
+                                                SymbolTableManager.insertInTable(entry);
+                                            }
+
+                                            return symbol(ParserSym.FLOAT_CONSTANT, text);
                                             }
 
 
