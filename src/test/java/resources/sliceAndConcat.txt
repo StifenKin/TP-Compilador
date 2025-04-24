@@ -1,0 +1,1 @@
+y := sliceAndConcat(3, 6, "amarillo", "verde", true)
