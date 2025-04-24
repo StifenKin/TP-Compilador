@@ -88,7 +88,8 @@ DoubleDot = ":"
 Letter = [a-zA-Z]
 Digit = [0-9]
 Digit19 = [1-9]
-Digit01 = [0-1]
+True = "true"
+False = "false"
 InvalidCharacter = [^a-zA-z0-9<>:,@/\%\+\*\-\.\[\];\(\)=?!]
 
 TraditionalComment = "#+" [^#]* "+#"
@@ -97,7 +98,7 @@ Comment = {TraditionalComment} | {NestedComment}
 
 WhiteSpace = {LineTerminator} | {Identation}
 Identifier = {Letter} ({Letter}|{Digit})*
-BooleanConstant = {Digit01}
+BooleanConstant = {True}|{False}
 IntegerConstant = {Digit}+
 InvalidIntegerConstant = 0+{Digit19}+
 FloatConstant = (({Digit}|{Digit19}{Digit}+)?\.{Digit}+)
@@ -148,6 +149,7 @@ StringConstant = \"(([^\"\n]*)\")
 
 
   /* Identifiers */
+    {BooleanConstant}                         { return symbol(ParserSym.BOOLEAN_CONSTANT); }
   {Identifier}                             {
                                               if(yytext().length() > 15) {
                                                   throw new InvalidLengthException("Identifier length not allowed: " + yytext());
@@ -160,7 +162,7 @@ StringConstant = \"(([^\"\n]*)\")
                                           }
   /* Constants */
 
-  {BooleanConstant}                         { return symbol(ParserSym.BOOLEAN_CONSTANT); }
+
 
   {IntegerConstant}                        {
                                                 if(yytext().length() > 5 || Integer.valueOf(yytext()) > 65535) {

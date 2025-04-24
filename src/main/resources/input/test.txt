@@ -17,7 +17,7 @@ pedro := "nombre"
 numero1 := 2.4
 numero2 := .42
 
-nota1 := 8
+nota1 := 1
 nota2 := 4
 
 
@@ -61,5 +61,7 @@ while (a > b)
         }
     }
 }
-y := sliceAndConcat(3, 6, "amarillo", "verde", 0)
-reorder([x+3, 2+2, 9-x],1,2)
+
+reorder([x+3, 1+1, 9-x],false,2)
+
+y := sliceAndConcat(3, 6, "amarillo", "verde", true)
