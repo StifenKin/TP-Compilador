@@ -96,6 +96,7 @@ TraditionalComment = "#+" [^#]* "+#"
 NestedComment = "#+" ([^#] | {TraditionalComment})* "+#"
 Comment = {TraditionalComment} | {NestedComment}
 
+
 WhiteSpace = {LineTerminator} | {Identation}
 Identifier = {Letter} ({Letter}|{Digit})*
 BooleanConstant = {True}|{False}

@@ -63,5 +63,4 @@ while (a > b)
 }
 
 reorder([x+3, 1+1, 9-x],false,2)
-
 y := sliceAndConcat(3, 6, "amarillo", "verde", true)
