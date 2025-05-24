@@ -9,8 +9,18 @@ import java.util.HashMap;
 class Parser;
 
 action code {:
+
+  ASTManager astManager;
+  IntermediateCodeGenerator intermediateCodeGenerator;
+  GestorNodos gestorNodos;
     HashMap<String, SymbolEntry> symbolTable = SymbolTableManager.symbolTable;
     List<String> idList = new ArrayList<>();
+
+      Stack<Integer> conditionStack = new Stack<>();
+      Stack<Integer> trueStack = new Stack<>();
+      Stack<Integer> falseStack = new Stack<>();
+      Stack<Integer> auxExpressionStack = new Stack<>();
+      Stack<Integer> auxTermStack = new Stack<>();
     DataType dataType;
 :}
 
