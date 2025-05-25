@@ -28,6 +28,7 @@ public class GestorNodos {
         return nuevoNodo.getIndice();
     }
 
+
     /*
       Crear un nodo interno: se reciben 3 índices de hijos ya creados.
 
