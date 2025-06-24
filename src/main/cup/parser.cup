@@ -17,6 +17,7 @@ action code {:
   GestorNodos gestorNodos;
     HashMap<String, SymbolEntry> symbolTable = SymbolTableManager.symbolTable;
     List<String> idList = new ArrayList<>();
+    List<String> expList = new ArrayList<>();
       Stack<Integer> conditionStack = new Stack<>();
       Stack<Integer> trueStack = new Stack<>();
       Stack<Integer> falseStack = new Stack<>();
@@ -34,6 +35,7 @@ action code {:
           int varsentenceIdx;
           int datatypeIdx;
           int idlistIdx;
+          int expListIdx;
           int decisionIdx;
           int conditionIdx;
           int comparisonIdx;
@@ -116,6 +118,7 @@ non terminal var_declaration;
 non terminal var_sencente_dec;
 non terminal data_type;
 non terminal id_list;
+non terminal exp_list;
 non terminal decision;
 non terminal condition;
 non terminal comparison;
@@ -384,7 +387,8 @@ factor ::= IDENTIFIER:id
   :};
 
 //reorder([x+3, 1+1, 9-x],1,2)
-reorder ::= REORDER OPEN_BRACKET OPEN_SQUARE_BRACKET c_list CLOSE_SQUARE_BRACKET COMMA BOOLEAN_CONSTANT COMMA INTEGER_CONSTANT CLOSE_BRACKET {:System.out.println("REORDER function");:};
+reorder ::= REORDER OPEN_BRACKET OPEN_SQUARE_BRACKET exp_list CLOSE_SQUARE_BRACKET COMMA BOOLEAN_CONSTANT COMMA INTEGER_CONSTANT CLOSE_BRACKET {:System.out.println("REORDER function");:};
+
 c_list ::= c_list COMMA list
   {:
             auxcondIdx = GestorNodos.crearNodo("<",GestorNodos.crearNodo("@aux"),GestorNodos.crearNodo("0"));
@@ -431,6 +435,35 @@ c_list ::= list
   :};
 //list ::= expression:e  {: System.out.println("Expresion: " + e); :};
 //list ::= INTEGER_CONSTANT:constant {: System.out.println("Integer constant: " + constant ); :};
+
+
+
+
+
+
+
+
+exp_list ::= exp_list COMMA expression:e
+  {:
+    System.out.println("exp: " + e);
+    expList.add((String)e);
+    expListIdx = GestorNodos.crearNodo(",",expListIdx,GestorNodos.crearNodo((String)e));
+  :};
+
+
+exp_list ::= expression:e
+  {:
+    System.out.println("exp: " + e);
+    expList.add((String)e);
+    expListIdx = GestorNodos.crearNodo((String)e);
+  :};
+
+
+
+
+
+
+
 list ::= IDENTIFIER:id
   {: System.out.println("Id: " + id);
     listIdx = GestorNodos.crearNodo(id);
