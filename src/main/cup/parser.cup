@@ -8,6 +8,7 @@ import java.util.HashMap;
 import lyc.compiler.tree.*;
 import lyc.compiler.files.*;
 import java.util.Stack;
+import java.io.IOException;
 
 class Parser;
 
@@ -62,6 +63,12 @@ action code {:
                 int auxcondIdx;
                 int auxnc2Idx;
                 int auxnc3Idx;
+
+        int reorderIdx;
+        int auxreorderIdx;
+        int sublistIdx;
+        int finalListIdx;      
+        int sacIdx; 
 :}
 
 
@@ -146,8 +153,18 @@ program ::= block:b {:   System.out.println("Compilation Ok");
                          //Imprimir arbol por consola
                          GestorNodos.imprimirArbol(blockIdx);
                          //Generar .dot para ver visualmente el arbol en pdf
-                         IntermediateCodeGenerator.generarDot("salida.dot",GestorNodos.obtenerNodo(blockIdx)); :};
+                         IntermediateCodeGenerator.generarDot("salida.dot",GestorNodos.obtenerNodo(blockIdx)); 
+               //genera codigo assembler          
+              /*try {
+                  AsmCodeGenerator.generateAssembler("salida.asm", blockIdx);
+              } catch (IOException e) {
+                  e.printStackTrace();
+              } */
+                         
+ :};
 
+       
+      
 /*-----------------------------------------
    BLOCK
 -----------------------------------------*/
@@ -189,8 +206,14 @@ sentence ::=
            {:
              sentenceIdx = s_readIdx;
            :}
-       | reorder:r
-       | slice_and_concat:sac;
+            | reorder:r
+            {:
+             sentenceIdx = reorderIdx;
+           :}
+            | slice_and_concat:sac
+            {:
+             sentenceIdx = sacIdx;
+           :};
 
 
 /*-----------------------------------------
@@ -389,6 +412,64 @@ factor ::= IDENTIFIER:id
 //reorder([x+3, 1+1, 9-x],1,2)
 reorder ::= REORDER OPEN_BRACKET OPEN_SQUARE_BRACKET exp_list CLOSE_SQUARE_BRACKET COMMA BOOLEAN_CONSTANT COMMA INTEGER_CONSTANT CLOSE_BRACKET {:System.out.println("REORDER function");:};
 
+
+
+/*reorder ::= REORDER OPEN_BRACKET OPEN_SQUARE_BRACKET exp_list:list CLOSE_SQUARE_BRACKET COMMA BOOLEAN_CONSTANT:bool COMMA INTEGER_CONSTANT:pivot CLOSE_BRACKET 
+{:
+   System.out.println("REORDER function");
+
+   ArrayList<String> listaOriginal = (ArrayList<String>) list;
+   int pivote = Integer.parseInt(pivot.toString());
+   int direccion = Integer.parseInt(bool.toString());
+
+   if (pivote < 0 || pivote >= listaOriginal.size()) {
+       System.err.println("Error: el pivote está fuera de rango.");
+       System.exit(1);
+   }
+
+   // Copia de la lista original para reordenar
+   ArrayList<String> nuevaLista = new ArrayList<>(listaOriginal);
+
+   if (direccion == 1) {
+       // Reordenar la izquierda del pivote
+       int i = 0, j = pivote - 1;
+       while (i < j) {
+           String tmp = nuevaLista.get(i);
+           nuevaLista.set(i, nuevaLista.get(j));
+           nuevaLista.set(j, tmp);
+           i++; j--;
+       }
+   } else {
+       // Reordenar la derecha del pivote
+       int i = pivote + 1, j = nuevaLista.size() - 1;
+       while (i < j) {
+           String tmp = nuevaLista.get(i);
+           nuevaLista.set(i, nuevaLista.get(j));
+           nuevaLista.set(j, tmp);
+           i++; j--;
+       }
+   }
+
+   // Generar árbol que une las expresiones como "," (lista secuencial)
+   finalListIdx = GestorNodos.crearNodo(nuevaLista.get(0));
+   for (int i = 1; i < nuevaLista.size(); i++) {
+       finalListIdx = GestorNodos.crearNodo(",", finalListIdx, GestorNodos.crearNodo(nuevaLista.get(i)));
+   }
+
+   // Crear nodo especial que indique que se está aplicando reorder
+   // Por ejemplo: reorder(pivote, bool, finalList)
+   auxreorderIdx = GestorNodos.crearNodo("=", 
+                         GestorNodos.crearNodo("@reorder"), 
+                         GestorNodos.crearNodo("pivot=" + pivote + " dir=" + direccion));
+
+   reorderIdx = GestorNodos.crearNodo("reorder", auxreorderIdx, finalListIdx);
+
+   RESULT = reorderIdx;
+:};
+*/
+
+
+
 c_list ::= c_list COMMA list
   {:
             auxcondIdx = GestorNodos.crearNodo("<",GestorNodos.crearNodo("@aux"),GestorNodos.crearNodo("0"));
@@ -448,6 +529,7 @@ exp_list ::= exp_list COMMA expression:e
     System.out.println("exp: " + e);
     expList.add((String)e);
     expListIdx = GestorNodos.crearNodo(",",expListIdx,GestorNodos.crearNodo((String)e));
+    RESULT = expList;
   :};
 
 
@@ -456,6 +538,7 @@ exp_list ::= expression:e
     System.out.println("exp: " + e);
     expList.add((String)e);
     expListIdx = GestorNodos.crearNodo((String)e);
+    RESULT = expList;
   :};
 
 
@@ -480,7 +563,52 @@ list ::= FLOAT_CONSTANT:constant
 //y = sliceAndConcat(3, 6, "amarillo", "verde", 0)
 slice_and_concat ::= IDENTIFIER ASSIG SLICE_AND_CONCAT OPEN_BRACKET INTEGER_CONSTANT COMMA INTEGER_CONSTANT COMMA STRING_CONSTANT COMMA STRING_CONSTANT COMMA BOOLEAN_CONSTANT CLOSE_BRACKET {:System.out.println("SLICE AND CONCAT function");:};
 
+/*
+slice_and_concat ::= IDENTIFIER:id ASSIG SLICE_AND_CONCAT OPEN_BRACKET 
+                      INTEGER_CONSTANT:limiteInicial COMMA 
+                      INTEGER_CONSTANT:limiteFinal COMMA 
+                      STRING_CONSTANT:palabra1 COMMA 
+                      STRING_CONSTANT:palabra2 COMMA 
+                      BOOLEAN_CONSTANT:usarPalabra1 
+                    CLOSE_BRACKET
+  {:
+    System.out.println("SLICE AND CONCAT function");
 
+    int inicio = (int) limiteInicial;
+    int fin = (int) limiteFinal;
+    String p1 = (String) palabra1;
+    String p2 = (String) palabra2;
+    boolean usarP1 = (Boolean) usarPalabra1;
+
+    // Validación de límites (compilación)
+    if (inicio < 0 || fin > (usarP1 ? p1.length() : p2.length()) || inicio >= fin) {
+        System.err.println("Error: límites de corte inválidos.");
+        System.exit(1);
+    }
+
+    // Generamos el nodo de slice
+    int sliceIdx = GestorNodos.crearNodo("slice",
+                        GestorNodos.crearNodo(String.valueOf(inicio)),
+                        GestorNodos.crearNodo(String.valueOf(fin)));
+
+    // Determinar palabra base y palabra a concatenar
+    int cortarEnIdx = GestorNodos.crearNodo(usarP1 ? p1 : p2);
+    int otraPalabraIdx = GestorNodos.crearNodo(usarP1 ? p2 : p1);
+
+    // Asociamos la palabra al slice
+    int slicedStringIdx = GestorNodos.crearNodo("apply", sliceIdx, cortarEnIdx);
+
+    // Nodo de concatenación: concat(otraPalabra, sliced)
+    int concatIdx = GestorNodos.crearNodo("concat", otraPalabraIdx, slicedStringIdx);
+
+    // Asignamos a la variable
+    int sliceAndConcatIdx = GestorNodos.crearNodo("=",
+                                    GestorNodos.crearNodo(id),
+                                    concatIdx);
+
+    RESULT = sliceAndConcatIdx;
+  :};
+*/
 
 //term ::= term MULT factor {: System.out.println("*"); :};
 //term ::= term DIV factor {: System.out.println("/"); :};

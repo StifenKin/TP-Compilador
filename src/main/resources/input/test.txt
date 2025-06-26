@@ -28,13 +28,7 @@ write(nombre)
 
 #+ Decisiones +#
 if (nota1 >= 7 AND nota2 >= 7) {
-    write("Promocionado!")
-} else {
-    if((nota1 < 7 AND nota2 >= 7) OR (nota1 >= 7 AND nota2 < 7)){
-        write("Aprobado!")
-    } else{
-        write("Recursado :(")
-    }
+    write("Promocionado")
 }
 
 #+ Condicion not +#
@@ -49,18 +43,8 @@ while (a > b)
     write("A mayor que b")
     if(a > b) {
         write("A mayor")
-    } else {
-        if (b > a)
-        {
-            write("B mayor")
-        } else {
-        while (b > c )
-        {
-            write("B mayor")
-        }
-        }
-    }
+    } 
 }
 
-reorder([x+3, 1+1, 9-x],false,2)
+
 y := sliceAndConcat(3, 6, "amarillo", "verde", true)

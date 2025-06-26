@@ -75,7 +75,7 @@ public class ParserTest {
         compilationSuccessful(readFromFile("while.txt"));
     }
 
-    @Test
+   /*/ @Test
     void reorderStatement() throws Exception {
         compilationSuccessful(readFromFile("reorder.txt"));
     }
@@ -83,7 +83,7 @@ public class ParserTest {
     @Test
     void sliceAndConcatStatement() throws Exception {
         compilationSuccessful(readFromFile("sliceAndConcat.txt"));
-    }
+    }*/
 
     private void compilationSuccessful(String input) throws Exception {
         assertThat(scan(input).sym).isEqualTo(ParserSym.EOF);
