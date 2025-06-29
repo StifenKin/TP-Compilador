@@ -79,11 +79,11 @@ public class ParserTest {
     void reorderStatement() throws Exception {
         compilationSuccessful(readFromFile("reorder.txt"));
     }
-
+*/
     @Test
     void sliceAndConcatStatement() throws Exception {
         compilationSuccessful(readFromFile("sliceAndConcat.txt"));
-    }*/
+    }
 
     private void compilationSuccessful(String input) throws Exception {
         assertThat(scan(input).sym).isEqualTo(ParserSym.EOF);
