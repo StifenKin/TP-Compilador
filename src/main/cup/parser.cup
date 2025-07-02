@@ -295,7 +295,6 @@ condition ::= NOT_COND comparison:c
     conditionIdx = GestorNodos.crearNodo("NOT", comparisonIdx);
   :};
 
-
 /*-----------------------------------------
    COMPARISON
 -----------------------------------------*/
