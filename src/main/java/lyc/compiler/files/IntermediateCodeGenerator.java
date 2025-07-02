@@ -3,10 +3,6 @@ package lyc.compiler.files;
 import lyc.compiler.tree.*;
 
 import java.io.*;
-
-
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 
 
@@ -19,7 +15,7 @@ public class IntermediateCodeGenerator implements FileGenerator {
         // Imprime en consola la ruta absoluta para verificar dónde se va a crear el archivo
         System.out.println("Generando archivo DOT en: " + file.getAbsolutePath());
 
-        try (FileWriter writer = new FileWriter(file)) {
+        try (FileWriter writer = new FileWriter(file, true)) {
             writer.write("digraph AST {\n");
             writer.write("    node [shape=record];\n");
 
@@ -46,6 +42,7 @@ public class IntermediateCodeGenerator implements FileGenerator {
         int index = nodo.getIndice();
         // Antes de componer el label, escapamos caracteres que Graphviz pueda interpretar mal
         String rawLabel = nodo.getValor() + " (" + index + ")";
+        System.out.println("Entonces: " +rawLabel);
         // Escapamos comillas, < y >
         String label = rawLabel
                 .replace("\"", "\\\"")
@@ -71,10 +68,23 @@ public class IntermediateCodeGenerator implements FileGenerator {
         }
     }
 
+ public void generate(FileWriter fileWriter) throws IOException {
+        File file = new File("salidassssss.dot");
+        Integer nodoRoot = ASTManager.getRoot(); 
+        // Imprime en consola la ruta absoluta para verificar dónde se va a crear el archivo
+        System.out.println("Generando archivo de arbol en: " + file.getAbsolutePath());
 
+        try (FileWriter writer = new FileWriter(file, true)) {
+            writer.write("digraph AST {\n");
+            writer.write("    node [shape=record];\n");
 
+            // Invocamos un metodo recursivo que escribe los nodos y las aristas
+            escribirNodo(writer, GestorNodos.obtenerNodo(nodoRoot));
 
-    @Override
+            writer.write("}\n");
+        }
+}
+   /* @Override
     public void generate(FileWriter fileWriter) throws IOException {
         fileWriter.write("+------------------------------- ARBOL -------------------------------+\n");
 
@@ -82,12 +92,19 @@ public class IntermediateCodeGenerator implements FileGenerator {
         Integer root = ASTManager.getRoot(); // Debes implementar ASTManager para guardar la raíz del AST.
 
         if (root != null) {
-            GestorNodos.imprimirArbol(root);
+            fileWriter.write("digraph AST {\n");
+            fileWriter.write("    node [shape=record];\n");
+
+            // Invocamos un metodo recursivo que escribe los nodos y las aristas
+            escribirNodo(fileWriter, GestorNodos.obtenerNodo(root));
+
+            fileWriter.write("}\n");
+            //GestorNodos.imprimirArbol(root);
             //printTree(root, fileWriter, 0);
         } else {
             fileWriter.write("Árbol vacío.\n");
         }
     }
-
+ */
 
 }

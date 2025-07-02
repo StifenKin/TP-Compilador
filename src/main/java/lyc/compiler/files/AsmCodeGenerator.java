@@ -35,7 +35,47 @@ public class AsmCodeGenerator implements FileGenerator {
 
     @Override
     public void generate(FileWriter fileWriter) throws IOException {
-        fileWriter.write("; no se utiliza.\n");
+        Integer root = ASTManager.getRoot();
+        System.out.println("finalAsm: ");
+                // Reiniciar buffers y contadores
+        dataSection.setLength(0);
+        codeSection.setLength(0);
+        declaredTemps.clear();
+        tempCount = 0;
+        labelCount = 0;
+
+        // Generar encabezados y la sección de datos
+        System.out.println("finalAsm2: "+dataSection.toString());
+        genDataHeader();
+        System.out.println("finalAsm3: "+dataSection.toString());
+        genUserVars();
+        // Variables compilador
+        dataSection.append("@c    DD 0.0\n");
+        dataSection.append("@sum  DD 0.0\n");
+        dataSection.append("@mult DD 1.0\n");
+        dataSection.append("@aux  DD 0.0\n");
+        System.out.println("finalAsm4: "+dataSection.toString());
+        // Generar la sección de código
+        genCodeHeader();
+        System.out.println("finalAsm5: "+dataSection.toString());
+        // Compilar la raíz del AST (postorden)
+        genStatement(root);
+        System.out.println("finalAsm6: "+dataSection.toString());
+        // Finalizar
+        genCodeFooter();
+        System.out.println("finalAsm7: "+dataSection.toString());
+        //System.out.println("finalAsm4: "+dataSection.toString());
+        // Unir dataSection + codeSection
+        StringBuilder finalAsm = new StringBuilder();
+        finalAsm.append(dataSection);
+        finalAsm.append(codeSection);
+
+        // 5) Escribir a archivo
+System.out.println("finalAsm: "+finalAsm);
+        fileWriter.write(finalAsm.toString());
+
+
+        System.out.println("Assembler generado: ");
     }
 
     /**
@@ -139,6 +179,7 @@ public class AsmCodeGenerator implements FileGenerator {
      * Recorre (postorden) el subárbol 'index' y genera código (sentencias).
      */
     private static void genStatement(int index) {
+        
         if (index == 0) return;
         Nodo nodo = GestorNodos.obtenerNodo(index);
         if (nodo == null) return;
@@ -146,7 +187,9 @@ public class AsmCodeGenerator implements FileGenerator {
         String val = nodo.getValor();
         int leftIdx  = getIndex(nodo.getIzquierdo());
         int rightIdx = getIndex(nodo.getDerecho());
-
+        System.out.println("VAL: "+val);
+                        System.out.println("hola: "+leftIdx);
+                 System.out.println("hola: "+rightIdx);
         switch(val) {
             case ";":
                 genStatement(leftIdx);
@@ -154,6 +197,7 @@ public class AsmCodeGenerator implements FileGenerator {
                 break;
 
             case "if":
+
                 genIf(leftIdx, rightIdx);
                 break;
 
@@ -174,10 +218,10 @@ public class AsmCodeGenerator implements FileGenerator {
 
     private static void genIf(int condIdx, int bodyIdx) {
         codeSection.append("\n; --- IF statement con else---\n");
-
+System.out.println("maraca1");
         // 1) compilar cond => float (1.0 => true, 0.0 => false)
         String condTemp = genExpr(condIdx);
-
+System.out.println("maraca2");
         // 2) cargar condTemp => comparar con 0
         String labelElse = newLabel("ELSE");
         String labelEnd  = newLabel("END_IF");
@@ -188,11 +232,12 @@ public class AsmCodeGenerator implements FileGenerator {
         codeSection.append("\tSAHF\n");
         // si 0 => ZF=1 => salta => else
         codeSection.append("\tJE ").append(labelElse).append("\n");
-
+System.out.println("maraca3");
         // 3) Compilar la parte true
         //   si el nodo "bodyIdx" es "cuerpo", su hijo izquierdo es la parte true
         //   su hijo derecho es la parte false
         Nodo bodyNode = GestorNodos.obtenerNodo(bodyIdx);
+        
         if (bodyNode != null && "cuerpo".equals(bodyNode.getValor())) {
             int truePartIdx = getIndex(bodyNode.getIzquierdo());
             int falsePartIdx = getIndex(bodyNode.getDerecho());

@@ -302,7 +302,7 @@ condition ::= NOT_COND comparison:c
 comparison ::= expression:e1 {: cizquierdoIdx = expressionIdx; :} comparator:op expression:e2
   {:
     System.out.println("Comparison detectada con op: " + op);
-    comparisonIdx = GestorNodos.crearNodo(comparator, cizquierdoIdx, expressionIdx);
+    comparisonIdx = GestorNodos.crearNodo(op.toString(), cizquierdoIdx, expressionIdx);
   :};
 
 
