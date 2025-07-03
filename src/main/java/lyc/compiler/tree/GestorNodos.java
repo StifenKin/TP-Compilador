@@ -1,6 +1,8 @@
 package lyc.compiler.tree;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class GestorNodos {
     // Almacena todos los nodos. Clave = indice del nodo, Valor = el propio nodo
@@ -85,23 +87,19 @@ public class GestorNodos {
  * Dado el índice de un nodo raíz de una lista (conectada por ","), 
  * retorna una lista con los índices de todos los elementos en orden.
  */
-public static java.util.List<Integer> obtenerHijos(int raizLista) {
-    java.util.List<Integer> elementos = new java.util.ArrayList<>();
-    Nodo actual = nodos.get(raizLista);
+    public static List<Integer> obtenerHijos(int nodoIdx) {
+        List<Integer> hijos = new ArrayList<>();
+        recorrer(nodoIdx, hijos);
+        return hijos;
+    }
 
-    while (actual != null && ",".equals(actual.getValor())) {
-        Nodo izquierdo = actual.getIzquierdo();
-        if (izquierdo != null) {
-            elementos.add(izquierdo.getIndice());
+    private static void recorrer(int idx, List<Integer> hijos) {
+        Nodo n = nodos.get(idx);
+        if (",".equals(n.getValor())) {
+            if (n.getIzquierdo() != null) recorrer(n.getIzquierdo().getIndice(), hijos);
+            if (n.getDerecho() != null) recorrer(n.getDerecho().getIndice(), hijos);
+        } else {
+            hijos.add(idx);
         }
-        actual = actual.getDerecho();
     }
-
-    // Último nodo que no era una coma (hoja)
-    if (actual != null) {
-        elementos.add(actual.getIndice());
-    }
-
-    return elementos;
-}
 }

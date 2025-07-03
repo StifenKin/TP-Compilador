@@ -46,5 +46,5 @@ while (a > b)
     } 
 }
 
-reorder([x+3, 1+1, 9-x, 2+2],true,1);
+reorder([x+3, 1+1, 9-x, 2+2],true,3);
 y := sliceAndConcat(3, 6, "amarillo", "verde", true);
