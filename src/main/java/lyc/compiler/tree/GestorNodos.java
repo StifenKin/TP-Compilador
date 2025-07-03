@@ -80,4 +80,28 @@ public class GestorNodos {
         // 3. Imprimir el hijo izquierdo
         imprimirRecursivo(nodo.getIzquierdo(), nivel + 1);
     }
+
+    /**
+ * Dado el índice de un nodo raíz de una lista (conectada por ","), 
+ * retorna una lista con los índices de todos los elementos en orden.
+ */
+public static java.util.List<Integer> obtenerHijos(int raizLista) {
+    java.util.List<Integer> elementos = new java.util.ArrayList<>();
+    Nodo actual = nodos.get(raizLista);
+
+    while (actual != null && ",".equals(actual.getValor())) {
+        Nodo izquierdo = actual.getIzquierdo();
+        if (izquierdo != null) {
+            elementos.add(izquierdo.getIndice());
+        }
+        actual = actual.getDerecho();
+    }
+
+    // Último nodo que no era una coma (hoja)
+    if (actual != null) {
+        elementos.add(actual.getIndice());
+    }
+
+    return elementos;
+}
 }

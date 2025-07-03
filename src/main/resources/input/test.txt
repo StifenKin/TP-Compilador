@@ -1,6 +1,6 @@
 #+ Declaracion de variables +#
 init {
-    nota1, nota2, id : Int
+    nota1, nota2, id, a, b : Int
     prom,numero1,numero2 : Float
     nombre, pedro: String
 }
@@ -46,5 +46,5 @@ while (a > b)
     } 
 }
 
-
-y := sliceAndConcat(3, 6, "amarillo", "verde", true)
+reorder([x+3, 1+1, 9-x, 2+2],true,1);
+y := sliceAndConcat(3, 6, "amarillo", "verde", true);

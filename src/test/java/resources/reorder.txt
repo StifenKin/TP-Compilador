@@ -1,1 +1,1 @@
-reorder([x, x, x],false,2)
+reorder([x+3, 1+1, 9-x],true,1);

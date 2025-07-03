@@ -75,11 +75,11 @@ public class ParserTest {
         compilationSuccessful(readFromFile("while.txt"));
     }
 
-   /*/ @Test
+   @Test
     void reorderStatement() throws Exception {
         compilationSuccessful(readFromFile("reorder.txt"));
     }
-*/
+
     @Test
     void sliceAndConcatStatement() throws Exception {
         compilationSuccessful(readFromFile("sliceAndConcat.txt"));

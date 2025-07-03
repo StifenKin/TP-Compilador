@@ -150,7 +150,7 @@ StringConstant = \"(([^\"\n]*)\")
 
 
   /* Identifiers */
-    {BooleanConstant}                         { return symbol(ParserSym.BOOLEAN_CONSTANT); }
+    {BooleanConstant}                         { return symbol(ParserSym.BOOLEAN_CONSTANT, yytext()); }
   {Identifier}                             {
                                               if(yytext().length() > 15) {
                                                   throw new InvalidLengthException("Identifier length not allowed: " + yytext());
